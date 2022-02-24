@@ -1,5 +1,6 @@
-import PhotoController from './controllers/photoController'
+import PhotoController from '../controllers/photoController'
 import express from 'express'
+import {OnlyGuest,AuthProtected} from '../middlewares/logged'
 
 const router = express.Router()
 
@@ -18,8 +19,6 @@ const router = express.Router()
 *    {
         "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
         "user":{
-            "is_active": true,
-            "role": "admin",
             "_id": "61a4da20478ed23fd9a63f31",
             "name": "John Doe",
             "username": "john",
@@ -30,14 +29,18 @@ const router = express.Router()
     }
 */
 
-router.post('/uploadPhoto', PhotoController.uploadPhoto)
+router.post('/photo/uploadPhoto', AuthProtected, PhotoController.uploadPhoto)
 
-router.get('/getAllPhotos', PhotoController.getAllPhotos) 
+router.get('/photo/sendLike', AuthProtected, PhotoController.sendLike)
 
 
-router.get('/mostLikeInWeak', PhotoController.mostLikeInWeak)
 
-router.get('/sendLike', PhotoController.sendLike)
+router.get('/photo/getPhotoById', PhotoController.getPhotoById)
+
+router.get('/photo/getAllPhotos', PhotoController.getAllPhotos) 
+
+router.get('/photo/mostLikeInWeak', PhotoController.mostLikeInWeak)
+
 
 
 
