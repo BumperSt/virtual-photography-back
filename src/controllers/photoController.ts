@@ -14,51 +14,72 @@ const s3 = new Aws.S3({
 
 const PhotoController = {
     uploadPhoto:(request:Request, response:Response) =>{
-
         const formidable = require('formidable');
         const form = new formidable.IncomingForm();
-
         form.parse(request, async (err, fields, files) => {
+            
             const fileContent = fs.readFileSync(files.file.filepath);
-            let data = await amazonStorage.upload(files.file.originalFilename, fileContent, "image/jpeg" )
-            if(data){
-                const photo = new Photo({
+            try {
+                let data = await amazonStorage.upload(files.file.originalFilename, fileContent, "image/jpeg" )
+                const photoData = new Photo({
                     name: fields.name,
                     description: fields.description,
                     tags:fields.tags,
-                    imageUrl: data.Location
+                    imageUrl: data.Location,
+                    mostLikesInWeak: 0,
+                    likes: 0
                 });
-                photo.save()
-                .then(result => {
-                    response.status(200).json({
-                        _id: result._id,
-                        name: result.name,
-                        description: result.description,
-                        tags: result.tags,
-                        imageUrl: result.imageUrl,
-                    })
-                })
-                .catch(err => {
-                    console.log(err)
-                    response.send({ message: err })
-                })
-            }else{
-                response.status(500).send({"err":"Error"})  
 
+                const photo = await photoData.save();
+                return response.status(201).json(photo)
+
+            } catch (error) {
+                console.log(error);
+                return response.status(400).send({"message":error})  
             }
-
         }); 
     },
-    getAllPhotos:(request:Request,response:Response) => {
-        Photo.find({}, function(err, photos) {
+    getAllPhotos: async (request:Request,response:Response) => {
+        try{
+            const photos = await Photo.find({});
+
             var photoMap = {};
-        
-            photos.forEach(function(photo) {
+            for(const photo of photos){
                 photoMap[photo._id] = photo;
-            });
+            }
         
-            response.status(200).json(photoMap)
-          });
+            return response.status(200).json(photoMap)
+        }catch (error){
+            console.log(error);
+            return response.status(400).send({"message":error})
+        }
+        
+    },
+    mostLikeInWeak: async (request:Request,response:Response) => {
+        try{
+            const photos = await Photo.find().sort({"mostLikesInWeak": -1})
+
+            return response.status(200).json(photos)
+        }catch(error){
+            console.log(error);
+            return response.status(400).send({"message":error})
+        }
+
+    },
+    sendLike: async (request:Request,response:Response) => {
+        try{
+            const {photoId} = request.query
+  
+            const update = await Photo.findOneAndUpdate({_id :photoId}, {$inc : {'likes' : 1, 'mostLikesInWeak' : 1}}, {
+                new: true
+              })
+            
+            return response.status(200).json(update)
+        }catch(error){
+            return response.status(400).json({"message": error})
+
+        }
+      
     }
 }
 

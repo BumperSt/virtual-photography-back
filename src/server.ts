@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import express from 'express';
-import database from '../config/databese'
+import database from './config/databese'
 database()
 
 import routes from './routes'
@@ -9,7 +9,7 @@ import routes from './routes'
 
 const app = express();
 
-routes(app)
+app.use('/',routes)
 
 const PORT = 8000;
 

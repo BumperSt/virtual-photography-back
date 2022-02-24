@@ -1,4 +1,4 @@
-import PhotoController from '../controllers/photoController'
+import PhotoController from './controllers/photoController'
 import express from 'express'
 
 const router = express.Router()
@@ -33,6 +33,12 @@ const router = express.Router()
 router.post('/uploadPhoto', PhotoController.uploadPhoto)
 
 router.get('/getAllPhotos', PhotoController.getAllPhotos) 
+
+
+router.get('/mostLikeInWeak', PhotoController.mostLikeInWeak)
+
+router.get('/sendLike', PhotoController.sendLike)
+
 
 
 

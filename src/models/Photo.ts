@@ -4,7 +4,9 @@ export interface IPhoto extends mongoose.Types.Subdocument{
     name:string
     description:string
     tags:Array<string>
-    imageUrl:string
+    imageUrl:string,
+    likes:number,
+    mostLikesInWeak:number
 }
 
 const PhotoSchema = new mongoose.Schema(
@@ -12,7 +14,9 @@ const PhotoSchema = new mongoose.Schema(
         name: {type:String, required:true},
         description: {type:String},
         tags: {type:String},
-        imageUrl : {type:String}
+        imageUrl : {type:String},
+        likes: {type:Number},
+        mostLikesInWeak: {type:Number}
 
     }
 )
